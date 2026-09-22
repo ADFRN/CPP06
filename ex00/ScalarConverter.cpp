@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ScalarConverter.cpp                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: afournie <afournie@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/09/22 11:30:48 by afournie          #+#    #+#             */
+/*   Updated: 2026/09/22 11:30:53 by afournie         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ScalarConverter.hpp"
 #include <iostream>
 #include <sstream>
@@ -33,6 +45,21 @@ bool isFloatPseudo(const std::string& s) {
 
 bool isDoublePseudo(const std::string& s) {
 	return s == "nan" || s == "+inf" || s == "-inf";
+}
+
+static std::string formatFloating(double value) {
+	std::ostringstream oss;
+	oss << value;
+	std::string str = oss.str();
+	// Si pas de point, pas de notation scientifique, ni de notation spéciale,
+	// on force un format décimal (ex: "42" -> "42.0")
+	if (str.find('.') == std::string::npos &&
+		str.find('e') == std::string::npos &&
+		str.find("nan") == std::string::npos &&
+		str.find("inf") == std::string::npos) {
+		str += ".0";
+	}
+	return str;
 }
 
 /*
@@ -102,6 +129,18 @@ void ScalarConverter::convert(const std::string& literal) {
 		std::stringstream ss(literal);
 		long tmp;
 		ss >> tmp;
+
+		if (ss.fail() || !ss.eof()) {
+			// La valeur dépasse la capacité d'un long, ou il reste
+			// des caractères non consommés après le nombre :
+			// on ne peut connaître la vraie valeur numérique,
+			// donc aucune des 4 conversions n'est possible.
+			std::cout << "char: impossible" << std::endl;
+			std::cout << "int: impossible" << std::endl;
+			std::cout << "float: impossible" << std::endl;
+			std::cout << "double: impossible" << std::endl;
+			return;
+		}
 		value = static_cast<double>(tmp);
 	} else { // FLOAT ou DOUBLE
 		if (literal.find("nan") != std::string::npos) {
@@ -141,8 +180,7 @@ void ScalarConverter::convert(const std::string& literal) {
 	} else if (isInf) {
 		std::cout << (infNegative ? "-inff" : "+inff");
 	} else {
-		std::cout << std::fixed << std::setprecision(1)
-				   << static_cast<float>(value) << "f";
+		std::cout << formatFloating(static_cast<float>(value)) << "f";
 	}
 	std::cout << std::endl;
 
@@ -153,7 +191,7 @@ void ScalarConverter::convert(const std::string& literal) {
 	} else if (isInf) {
 		std::cout << (infNegative ? "-inf" : "+inf");
 	} else {
-		std::cout << std::fixed << std::setprecision(1) << value;
+		std::cout << formatFloating(value);
 	}
 	std::cout << std::endl;
 }
