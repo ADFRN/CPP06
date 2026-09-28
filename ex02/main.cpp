@@ -1,30 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ScalarConverter.hpp                                :+:      :+:    :+:   */
+/*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afournie <afournie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/22 15:36:32 by afournie          #+#    #+#             */
-/*   Updated: 2026/09/22 15:36:33 by afournie         ###   ########.fr       */
+/*   Created: 2026/09/28 15:18:37 by afournie          #+#    #+#             */
+/*   Updated: 2026/09/28 15:20:34 by afournie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SCALARCONVERTER_HPP
-#define SCALARCONVERTER_HPP
+#include "functions.hpp"
 
-#include <iostream>
+int main() {
 
-class	ScalarConverter
-{
-	private:
-		ScalarConverter();
-		ScalarConverter(ScalarConverter const &ref);
-		ScalarConverter &operator=(ScalarConverter const &ref);
-		~ScalarConverter();
+	std::srand(std::time(NULL));
 
-	public:
-		static void convert(const std::string& s);
-};
-
-#endif
+	for (int i = 0; i < 5; ++i) {
+		Base *p = generate();
+		identify(p);
+		identify(*p);
+		delete p;
+	}
+}
