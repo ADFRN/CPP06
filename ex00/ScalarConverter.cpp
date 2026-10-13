@@ -6,184 +6,106 @@
 /*   By: afournie <afournie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/22 11:30:48 by afournie          #+#    #+#             */
-/*   Updated: 2026/10/13 14:32:51 by afournie         ###   ########.fr       */
+/*   Updated: 2026/10/13 14:56:20 by afournie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ScalarConverter.hpp"
 
 ScalarConverter::ScalarConverter() {}
-
-ScalarConverter::ScalarConverter(const ScalarConverter& other)
+ScalarConverter::ScalarConverter(const ScalarConverter &other) { (void)other; }
+ScalarConverter &ScalarConverter::operator=(const ScalarConverter &other)
 {
 	(void)other;
+	return (*this);
 }
-
-ScalarConverter& ScalarConverter::operator=(const ScalarConverter& other)
-{
-	(void)other;
-	return *this;
-}
-
 ScalarConverter::~ScalarConverter() {}
 
-namespace {
+static std::string formatFloating(double value)
+{
+	if (std::isnan(value))
+		return ("nan");
+	if (std::isinf(value))
+		return (value > 0 ? "+inf" : "-inf");
 
-enum LiteralType { CHAR, INT, FLOAT, DOUBLE, INVALID };
-
-bool isFloatPseudo(const std::string& s) {
-	return s == "nanf" || s == "+inff" || s == "-inff";
-}
-
-bool isDoublePseudo(const std::string& s) {
-	return s == "nan" || s == "+inf" || s == "-inf";
-}
-
-static std::string formatFloating(double value) {
 	std::ostringstream oss;
+	// vire le e+ sur les grnd nmbres
+	if (std::fabs(value) >= 1e6 && std::fabs(value) < 1e15)
+		oss << std::fixed << std::setprecision(1);
 	oss << value;
-	std::string str = oss.str();
-	// Si pas de point, pas de notation scientifique, ni de notation spéciale,
-	// on force un format décimal (ex: "42" -> "42.0")
-	if (str.find('.') == std::string::npos &&
-		str.find('e') == std::string::npos &&
-		str.find("nan") == std::string::npos &&
-		str.find("inf") == std::string::npos) {
-		str += ".0";
-	}
-	return str;
+	std::string s = oss.str();
+	// Pour le .0 si pas de point
+	if (s.find('.') == std::string::npos && s.find('e') == std::string::npos)
+		s += ".0";
+	return (s);
 }
 
-/*
-** Analyse la chaîne pour déterminer sa "nature" avant toute conversion.
-** On ne fait aucun calcul ici : on regarde juste la forme du texte.
-*/
-LiteralType getType(const std::string& s) {
+static void printChar(double d)
+{
+	std::cout << "char: ";
+	if (std::isnan(d) || std::isinf(d) || d < 0 || d > 127)
+		std::cout << "impossible" << std::endl;
+	else if (!std::isprint(static_cast<int>(d)))
+		std::cout << "Non displayable" << std::endl;
+	else
+		std::cout << "'" << static_cast<char>(d) << "'" << std::endl;
+}
+
+static void printInt(double d)
+{
+	std::cout << "int: ";
+	if (std::isnan(d) || std::isinf(d) || d < static_cast<double>(INT_MIN)
+		|| d > static_cast<double>(INT_MAX))
+		std::cout << "impossible" << std::endl;
+	else
+		std::cout << static_cast<int>(d) << std::endl;
+}
+
+static void printFloat(double d)
+{
+	std::cout << "float: " << formatFloating(static_cast<float>(d)) << "f" << std::endl;
+}
+
+static void printDouble(double d)
+{
+	std::cout << "double: " << formatFloating(d) << std::endl;
+}
+
+void ScalarConverter::convert(const std::string &literal)
+{
+	std::string s = literal;
+	double d = 0;
+
 	if (s.empty())
-		return INVALID;
+	{
+		std::cout << "Erreur : chaine vide" << std::endl;
+		return ;
+	}
 
-	if (isDoublePseudo(s))
-		return DOUBLE;
-	if (isFloatPseudo(s))
-		return FLOAT;
-
-	// un char : exactement 1 caractère et ce n'est pas un chiffre isolé
 	if (s.length() == 1 && !std::isdigit(static_cast<unsigned char>(s[0])))
-		return CHAR;
-
-	size_t i = 0;
-	bool hasDigit = false;
-	bool hasDot = false;
-	bool hasF = false;
-
-	if (s[i] == '+' || s[i] == '-')
-		i++;
-
-	for (; i < s.length(); i++) {
-		if (std::isdigit(static_cast<unsigned char>(s[i])))
-			hasDigit = true;
-		else if (s[i] == '.' && !hasDot)
-			hasDot = true;
-		else if (s[i] == 'f' && i == s.length() - 1 && hasDigit)
-			hasF = true;
-		else
-			return INVALID;
+	{
+		d = static_cast<double>(static_cast<unsigned char>(s[0]));
 	}
+	else
+	{
+		if (s[s.length() - 1] == 'f' && s != "+inf" && s != "-inf")
+			s.erase(s.length() - 1);
 
-	if (!hasDigit)
-		return INVALID;
-	if (hasF)
-		return FLOAT;
-	if (hasDot)
-		return DOUBLE;
-	return INT;
-}
+		char *end;
+		d = std::strtod(s.c_str(), &end);
 
-} // namespace anonyme
-
-void ScalarConverter::convert(const std::string& literal) {
-	LiteralType type = getType(literal);
-
-	if (type == INVALID) {
-		std::cout << "Literal is not valid" << std::endl;
-		return;
-	}
-
-	double value = 0.0;
-	bool isNan = false;
-	bool isInf = false;
-	bool infNegative = false;
-
-	if (type == CHAR) {
-		value = static_cast<double>(static_cast<unsigned char>(literal[0]));
-	} else if (type == INT) {
-		// on passe par un long pour pouvoir détecter le dépassement d'int
-		std::stringstream ss(literal);
-		long tmp;
-		ss >> tmp;
-
-		if (ss.fail() || !ss.eof()) {
-			// La valeur dépasse la capacité d'un long, ou il reste
-			// des caractères non consommés après le nombre :
-			// on ne peut connaître la vraie valeur numérique,
-			// donc aucune des 4 conversions n'est possible.
+		if (s.empty() || *end != '\0')
+		{
 			std::cout << "char: impossible" << std::endl;
 			std::cout << "int: impossible" << std::endl;
 			std::cout << "float: impossible" << std::endl;
 			std::cout << "double: impossible" << std::endl;
-			return;
-		}
-		value = static_cast<double>(tmp);
-	} else { // FLOAT ou DOUBLE
-		if (literal.find("nan") != std::string::npos) {
-			isNan = true;
-		} else if (literal.find("inf") != std::string::npos) {
-			isInf = true;
-			infNegative = (literal[0] == '-');
-		} else {
-			value = std::strtod(literal.c_str(), NULL);
+			return ;
 		}
 	}
 
-	// ---------------- char ----------------
-	std::cout << "char: ";
-	if (isNan || isInf || value < 0 || value > 127) {
-		std::cout << "impossible";
-	} else if (!std::isprint(static_cast<int>(value))) {
-		std::cout << "Non displayable";
-	} else {
-		std::cout << "'" << static_cast<char>(value) << "'";
-	}
-	std::cout << std::endl;
-
-	// ---------------- int ----------------
-	std::cout << "int: ";
-	if (isNan || isInf || value < INT_MIN || value > INT_MAX) {
-		std::cout << "impossible";
-	} else {
-		std::cout << static_cast<int>(value);
-	}
-	std::cout << std::endl;
-
-	// ---------------- float ----------------
-	std::cout << "float: ";
-	if (isNan) {
-		std::cout << "nanf";
-	} else if (isInf) {
-		std::cout << (infNegative ? "-inff" : "+inff");
-	} else {
-		std::cout << formatFloating(static_cast<float>(value)) << "f";
-	}
-	std::cout << std::endl;
-
-	// ---------------- double ----------------
-	std::cout << "double: ";
-	if (isNan) {
-		std::cout << "nan";
-	} else if (isInf) {
-		std::cout << (infNegative ? "-inf" : "+inf");
-	} else {
-		std::cout << formatFloating(value);
-	}
-	std::cout << std::endl;
+	printChar(d);
+	printInt(d);
+	printFloat(d);
+	printDouble(d);
 }
