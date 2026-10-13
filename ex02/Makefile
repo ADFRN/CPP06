@@ -6,7 +6,7 @@
 #    By: afournie <afournie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/08/20 11:54:43 by afournie          #+#    #+#              #
-#    Updated: 2026/09/28 15:20:12 by afournie         ###   ########.fr        #
+#    Updated: 2026/10/13 14:33:35 by afournie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ INC			=	Base.hpp		\
 OBJ			= $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 
 CC			= c++
-CFLAGS		= -std=c++98 -Wall -Wextra -Werror -Wshadow
+CFLAGS		= -std=c++98 -Wall -Wextra -Werror
 
 RM			= rm -rf
 

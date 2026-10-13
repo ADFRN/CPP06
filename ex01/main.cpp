@@ -6,12 +6,12 @@
 /*   By: afournie <afournie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/22 15:12:31 by afournie          #+#    #+#             */
-/*   Updated: 2026/09/22 15:15:02 by afournie         ###   ########.fr       */
+/*   Updated: 2026/10/13 14:32:33 by afournie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
 #include "Serializer.hpp"
+#include <iostream>
 
 int main() {
 	Data original;

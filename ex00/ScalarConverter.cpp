@@ -6,19 +6,11 @@
 /*   By: afournie <afournie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/22 11:30:48 by afournie          #+#    #+#             */
-/*   Updated: 2026/09/22 11:30:53 by afournie         ###   ########.fr       */
+/*   Updated: 2026/10/13 14:32:51 by afournie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ScalarConverter.hpp"
-#include <iostream>
-#include <sstream>
-#include <iomanip>
-#include <cctype>
-#include <cstdlib>
-#include <climits>
-#include <cfloat>
-#include <cmath>
 
 ScalarConverter::ScalarConverter() {}
 

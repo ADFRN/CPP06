@@ -6,15 +6,15 @@
 /*   By: afournie <afournie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/22 14:54:17 by afournie          #+#    #+#             */
-/*   Updated: 2026/09/22 15:14:06 by afournie         ###   ########.fr       */
+/*   Updated: 2026/10/13 14:32:17 by afournie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERIALIZER_HPP
 #define SERIALIZER_HPP
 
-#include <stdint.h>
 #include "Data.hpp"
+#include <stdint.h>
 
 class	Serializer
 {

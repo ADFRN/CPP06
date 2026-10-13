@@ -6,23 +6,23 @@
 #    By: afournie <afournie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/08/20 11:54:43 by afournie          #+#    #+#              #
-#    Updated: 2026/09/22 15:15:54 by afournie         ###   ########.fr        #
+#    Updated: 2026/10/13 14:33:53 by afournie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRC_DIR		= .
 OBJ_DIR		= obj
 
-SRC			= main.cpp			\
+SRC			=	main.cpp		\
 				Serializer.cpp	\
 
-INC			= Serializer.hpp	\
-				Data.hpp		\
+INC			=	Serializer.hpp	\
+				Data.hpp
 
 OBJ			= $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 
 CC			= c++
-CFLAGS		= -std=c++98 -Wall -Wextra -Werror -Wshadow
+CFLAGS		= -std=c++98 -Wall -Wextra -Werror
 
 RM			= rm -rf
 

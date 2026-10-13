@@ -6,7 +6,7 @@
 /*   By: afournie <afournie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/28 15:13:41 by afournie          #+#    #+#             */
-/*   Updated: 2026/09/28 15:18:14 by afournie         ###   ########.fr       */
+/*   Updated: 2026/10/13 14:33:13 by afournie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ void identify(Base* p)
 
 }
 
-void identify(Base &p) {
+void identify(Base &p)
+{
 	try {
 		(void)dynamic_cast<A &>(p);
 		std::cout << "A" << std::endl;
